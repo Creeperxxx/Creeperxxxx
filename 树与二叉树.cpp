@@ -6,7 +6,15 @@ using namespace std;
 typedef struct
 {
 	int data;
+	void (*print)(TElemType T);
 }TElemType;
+
+typedef struct
+{
+	BiNode data[MAXSIZE];
+	int front;
+	int rear;
+}BTQueue;
 
 typedef struct
 {
@@ -37,6 +45,11 @@ void Pop_BtStack(BTStack& S, BiNode& T);
 void visit(Bitree T);
 void PreOrderTraverse_Bt(Bitree T);
 void InOrderTraverse(Bitree T);
+void LevelOrder(Bitree T);
+void BTQueueInit(BTQueue& Q);
+bool BTQueueIsEmpty(BTQueue& Q);
+void EnBTQueue(BTQueue& Q,Bitree T);
+void DeBTQueue(BTQueue& Q, Bitree T);
 
 int main()
 {
@@ -121,4 +134,67 @@ void InOrderTraverse(Bitree T)//栈实现中序遍历
 			p = p->Rchild;
 		}
 	}
+}
+
+void LevelOrder(Bitree T)//队列遍历二叉树
+{
+	Bitree p;
+	p = T;
+	BTQueue qu;
+	BTQueueInit(qu);
+	EnBTQueue(qu, p);
+	while (!BTQueueIsEmpty(qu))
+	{
+		DeBTQueue(qu, p);
+		visit(p);
+		if (p->Ichild != NULL)
+		{
+			EnBTQueue(qu, p->Ichild);
+		}
+		if (p->Rchild != NULL)
+		{
+			EnBTQueue(qu, p->Rchild);
+		}
+	}
+}//原理：根结点入队，出队，访问，然后入队其孩子，重复
+
+void BTQueueInit(BTQueue& Q)
+{
+	Q.front = 0;
+	Q.rear = 0;
+}
+
+bool BTQueueIsEmpty(BTQueue& Q)
+{
+	if (Q.front == Q.rear)
+	{
+		return true;
+	}
+	return false;
+}
+
+void EnBTQueue(BTQueue& Q,Bitree T)
+{
+	if ((Q.rear - Q.front + 1) % MAXSIZE == 0)
+	{
+		exit(OVERFLOW);
+	}
+	Q.data[Q.rear] = *T;
+	Q.rear = (Q.rear + 1) % MAXSIZE;
+}
+
+void DeBTQueue(BTQueue& Q, Bitree T)
+{
+	if (Q.front == Q.rear)
+	{
+		exit(OVERFLOW);
+	}
+	*T = Q.data[Q.front];
+	Q.front = (Q.front + 1) % MAXSIZE;
+}
+
+void print(TElemType T)
+{
+	printf("%d", T.data);
+	return;
 }
