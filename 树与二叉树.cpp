@@ -2,7 +2,10 @@
 using namespace std;
 #define MAXSIZE 100
 #define TElemType int
-//度：结点子树个数	*树的度：所有结点度的最大值
+
+//历程：
+//2023/2/29:完成110-112三个函数并调试成功
+
 
 //typedef struct
 //{
@@ -92,7 +95,7 @@ typedef struct//哈夫曼树结点
 void BTStackInit(BTStack& S);
 bool BTStackIsEmpyt(BTStack& S);
 void Push_BTStack(BTStack& S, Bitree T);
-void Pop_BtStack(BTStack& S, BiNode& T);
+void Pop_BtStack(BTStack& S, Bitree T);
 void visit(Bitree T);
 void PreOrderTraverse_Bt(Bitree T);
 void InOrderTraverse(Bitree T);
@@ -109,6 +112,7 @@ int BiNodeLeafCount(Bitree T);
 void CreateHuffmanTree(HuffmanTree& HT, int n);
 void HuffmanSelectMin(HuffmanTree HT, int n, int& S1, int& S2);
 void PrintHuffmanTree(HuffmanTree HT, int n);
+void CreateHuffmanCode(HuffmanTree HT, char** HC, int n);
 
 int main()
 {
@@ -152,14 +156,14 @@ void Push_BTStack(BTStack& S, Bitree T)
 	*S.Top++ = *T;
 }
 
-void Pop_BtStack(BTStack& S, BiNode& T)
+void Pop_BtStack(BTStack& S, Bitree T)
 {
 	if (S.Base == S.Top)
 	{
 		exit(OVERFLOW);
 	}
 	S.Top--;
-	T = *S.Top;
+	*T = *S.Top;
 }
 
 void visit(Bitree T)
@@ -193,11 +197,19 @@ void InOrderTraverse(Bitree T)//栈实现中序遍历
 		}
 		else
 		{
-		//	Pop_BtStack(S, *p);
+			p = new BiNode;
+			if (!p)
+			{
+				exit(OVERFLOW);
+			}
+			Pop_BtStack(S, p);
 			visit(p);
+			Bitree m = p;
 			p = p->Rchild;
+			free(m);
 		}
 	}
+	return;
 }
 
 void LevelOrder(Bitree T)//队列遍历二叉树
@@ -422,5 +434,35 @@ void PrintHuffmanTree(HuffmanTree HT, int n)
 		cout << i << "\t" << HT[i].weight << "\t" << HT[i].parent
 			<<"\t"<<HT[i].ich << "\t"<< HT[i].rch << "\t" << endl;
 	}
+	return;
+}
+
+void CreateHuffmanCode(HuffmanTree HT, char** HC, int n)
+{
+	HC = new char* [n+1];
+	char* cd = new char[n];
+	cd[n - 1] = '\0';
+	for (int i = 1; i <= n; i++)
+	{
+		int c = i;
+		int start = n - 2;
+		int p = HT[i].parent;
+		while (p != 0)
+		{
+			if (HT[p].ich == c)
+			{
+				cd[start--] = '0';
+			}
+			else
+			{
+				cd[start--] = '1';
+			}
+			c = p;
+			p = HT[c].parent;
+		}
+		HC[i] = new char[n - start - 1];
+		strcpy(HC[i], &cd[start+1]);
+	}
+	delete cd;
 	return;
 }
