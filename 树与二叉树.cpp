@@ -2,10 +2,14 @@
 using namespace std;
 #define MAXSIZE 100
 #define TElemType int
+#define VerTexType char 
+#define MVNum 100//邻接矩阵里顶点表
+#define ArcType int
+#define MaxInt 32767
 
 //历程：
-//2023/2/29:完成110-112三个函数并调试成功
-
+//2024/2/29:创建哈夫曼树至求哈夫曼编码
+//2024/3/1:定义图至创建无向邻接表
 
 //typedef struct
 //{
@@ -92,6 +96,34 @@ typedef struct//哈夫曼树结点
 	int rch;
 }HTNode,*HuffmanTree;
 
+typedef struct
+{
+	VerTexType vexs[MVNum];
+	ArcType arcs[MVNum][MVNum];
+	int vexnum;//顶点数
+	int arcnum;//边数
+}AMGraph;
+
+typedef struct ArcNode
+{
+	int adjvex;
+	struct ArcNode* nextarc;
+	ArcType info;
+}ArcNode;
+
+typedef struct VNode
+{
+	VerTexType data;
+	ArcNode* firstarc;
+}VNode,ADjList[MVNum];
+
+typedef struct
+{
+	ADjList vertics;//顶点结点数组
+	int vexnum;
+	int arcnum;
+}ALGraph;//邻接表
+
 void BTStackInit(BTStack& S);
 bool BTStackIsEmpyt(BTStack& S);
 void Push_BTStack(BTStack& S, Bitree T);
@@ -113,6 +145,10 @@ void CreateHuffmanTree(HuffmanTree& HT, int n);
 void HuffmanSelectMin(HuffmanTree HT, int n, int& S1, int& S2);
 void PrintHuffmanTree(HuffmanTree HT, int n);
 void CreateHuffmanCode(HuffmanTree HT, char** HC, int n);
+void CreateUDN(AMGraph& G);
+int LocateVex(AMGraph& G, VerTexType v);
+void CreateUDG(ALGraph& G);
+int LocateVexAL(ALGraph& G, VerTexType v);
 
 int main()
 {
@@ -463,6 +499,99 @@ void CreateHuffmanCode(HuffmanTree HT, char** HC, int n)
 		HC[i] = new char[n - start - 1];
 		strcpy(HC[i], &cd[start+1]);
 	}
-	delete cd;
+	free(cd);
 	return;
+}
+
+void CreateUDN(AMGraph& G)//构造无向网
+{
+	cout << "输入顶点数与边数" << endl;
+	cin >> G.vexnum >> G.arcnum;
+	cout << "输入顶点信息" << endl;
+	for (int i = 0; i < G.vexnum; i++)
+	{
+		cin >> G.vexs[i];
+	}
+	for (int i = 0; i < G.vexnum; i++)
+	{
+		for (int j = 0; j < G.vexnum; j++)
+		{
+			G.arcs[i][j] = MaxInt;
+		}
+	}
+	VerTexType v1;
+	VerTexType v2;
+	ArcType weight;
+	for (int i = 0; i < G.arcnum; i++)
+	{
+		cout << "依次输入两个顶点及边的权值" << endl;
+		cin >> v1 >> v2 >> weight;
+		int n = LocateVex(G, v1);
+		int m = LocateVex(G, v2);
+		if (m < 0 || n < 0)
+		{
+			exit(OVERFLOW);
+		}
+		G.arcs[n][m] = weight;
+		G.arcs[m][n] = weight;
+	}
+	return;
+}
+
+int LocateVex(AMGraph& G,VerTexType v)
+{
+	for (int i = 0; i < G.vexnum; i++)
+	{
+		if (G.vexs[i] == v)
+		{
+			return i;
+		}
+	}
+	return -1;
+}
+
+void CreateUDG(ALGraph& G)//建立无向邻接表
+{
+	cout << "输入总结点数和总边数" << endl;
+	cin >> G.vexnum >> G.arcnum;
+	if (G.vexnum > MVNum)
+	{
+		exit(OVERFLOW);
+	}
+	cout << "输入结点信息" << endl;
+	for (int i = 0; i < G.vexnum; i++)
+	{
+		cin >> G.vertics[i].data;
+		G.vertics[i].firstarc = NULL;
+	}
+	VerTexType v1;
+	VerTexType v2;
+	for (int j = 0; j < G.arcnum; j++)
+	{
+		cin >> v1 >> v2;
+		int m = LocateVexAL(G, v1);
+		int n = LocateVexAL(G, v2);
+		ArcNode* p;
+		p = new ArcNode;
+		p->adjvex = n;
+		p->nextarc = G.vertics[m].firstarc;
+		G.vertics[m].firstarc = p;
+		p = new ArcNode;
+		p->adjvex = m;
+		p->nextarc = NULL;
+		p->nextarc = G.vertics[n].firstarc;
+		G.vertics[n].firstarc = p;
+	}
+}
+
+int LocateVexAL(ALGraph& G, VerTexType v)
+{
+	for (int i = 0; i < G.vexnum; i++)
+	{
+		if (G.vertics[i].data == v)
+		{
+			return i;
+		}
+	}
+	return -1;
 }
