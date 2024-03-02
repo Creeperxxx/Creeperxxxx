@@ -3,13 +3,14 @@ using namespace std;
 #define MAXSIZE 100
 #define TElemType int
 #define VerTexType char 
-#define MVNum 100//é‚»æ¥çŸ©é˜µé‡Œé¡¶ç‚¹è¡¨
+#define MVNum 100//ÁÚ½Ó¾ØÕóÀï¶¥µã±í
 #define ArcType int
 #define MaxInt 32767
 
-//å†ç¨‹ï¼š
-//2024/2/29:åˆ›å»ºå“ˆå¤«æ›¼æ ‘è‡³æ±‚å“ˆå¤«æ›¼ç¼–ç 
-//2024/3/1:å®šä¹‰å›¾è‡³åˆ›å»ºæ— å‘é‚»æ¥è¡¨
+//Àú³Ì£º
+//2024/2/29:´´½¨¹ş·òÂüÊ÷ÖÁÇó¹ş·òÂü±àÂë
+//2024/3/1:¶¨ÒåÍ¼ÖÁ´´½¨ÎŞÏòÁÚ½Ó±í
+//2024/3/2:Éî¶È±éÀúºÍ¹ã¶È±éÀú
 
 //typedef struct
 //{
@@ -37,7 +38,7 @@ typedef struct TriTNode
 	struct TriTNode* Ichild;
 	struct TriTNode* parent;
 	struct TriTNode* Rchild;
-}TriTNode,*TriTree;//ä¸‰å‰é“¾è¡¨
+}TriTNode,*TriTree;//Èı²æÁ´±í
 
 typedef struct
 {
@@ -46,7 +47,7 @@ typedef struct
 	int StackSise;
 }BTStack;
 
-typedef struct BiThrNode//çº¿ç´¢äºŒå‰æ ‘
+typedef struct BiThrNode//ÏßË÷¶ş²æÊ÷
 {
 	int data;
 	int ilag;
@@ -55,14 +56,14 @@ typedef struct BiThrNode//çº¿ç´¢äºŒå‰æ ‘
 	struct BiThrNode* rchild;
 }BiThrNode, * BiThrTree;
 
-//æ ‘çš„å­˜å‚¨
+//Ê÷µÄ´æ´¢
 typedef struct
 {
 	int data;
 	int parent;
 }PTNode;
 
-typedef struct//æ‰¾åŒäº²å®¹æ˜“
+typedef struct//ÕÒË«Ç×ÈİÒ×
 {
 	PTNode nodes[MAXSIZE];
 	int r;
@@ -75,20 +76,20 @@ typedef struct CTNode
 	struct CTNode* next;
 }CTNode,*ChildPtr;
 
-typedef struct//æ‰¾å­©å­å®¹æ˜“
+typedef struct//ÕÒº¢×ÓÈİÒ×
 {
 	TElemType data;
 	CTNode* firstchild;
 }CTBox;
 
-typedef struct CSNode //äºŒå‰é“¾è¡¨å­˜å‚¨ï¼Œå³å°†æ ‘è½¬åŒ–ä¸ºäºŒå‰æ ‘
+typedef struct CSNode //¶ş²æÁ´±í´æ´¢£¬¼´½«Ê÷×ª»¯Îª¶ş²æÊ÷
 {
 	TElemType data;
 	struct CSNode* firstchild;
 	struct CSNode* nextsibling;
 }CSNode, * CSTree;
 
-typedef struct//å“ˆå¤«æ›¼æ ‘ç»“ç‚¹
+typedef struct//¹ş·òÂüÊ÷½áµã
 {
 	int weight;
 	int parent;
@@ -100,8 +101,8 @@ typedef struct
 {
 	VerTexType vexs[MVNum];
 	ArcType arcs[MVNum][MVNum];
-	int vexnum;//é¡¶ç‚¹æ•°
-	int arcnum;//è¾¹æ•°
+	int vexnum;//¶¥µãÊı
+	int arcnum;//±ßÊı
 }AMGraph;
 
 typedef struct ArcNode
@@ -119,10 +120,17 @@ typedef struct VNode
 
 typedef struct
 {
-	ADjList vertics;//é¡¶ç‚¹ç»“ç‚¹æ•°ç»„
+	ADjList vertics;//¶¥µã½áµãÊı×é
 	int vexnum;
 	int arcnum;
-}ALGraph;//é‚»æ¥è¡¨
+}ALGraph;//ÁÚ½Ó±í
+
+typedef struct
+{
+	int* base;
+	int front;
+	int rear;
+}SqQueue;
 
 void BTStackInit(BTStack& S);
 bool BTStackIsEmpyt(BTStack& S);
@@ -149,6 +157,11 @@ void CreateUDN(AMGraph& G);
 int LocateVex(AMGraph& G, VerTexType v);
 void CreateUDG(ALGraph& G);
 int LocateVexAL(ALGraph& G, VerTexType v);
+void DFS(AMGraph& G, int v,bool* visited);
+void BFS(ALGraph& G, int v,bool* visited,SqQueue &Q);
+void SqQueueInit(SqQueue& Q);
+void EnSqQueue(SqQueue& Q, int v);
+void DeSqQueue(SqQueue& Q, int& v);
 
 int main()
 {
@@ -216,9 +229,9 @@ void PreOrderTraverse_Bt(Bitree T)
 	visit(T);
 	PreOrderTraverse_Bt(T->Ichild);
 	PreOrderTraverse_Bt(T->Rchild);
-}//æ­¤ä¹ƒå…ˆåºéå†ï¼Œä¸­åºå’Œååºåªä¸è¿‡æ˜¯å°†45â€”â€”48æŒ‰æƒ…å†µè°ƒæ¢å…ˆåé¡ºåºç½¢äº†
+}//´ËÄËÏÈĞò±éÀú£¬ÖĞĞòºÍºóĞòÖ»²»¹ıÊÇ½«45¡ª¡ª48°´Çé¿öµ÷»»ÏÈºóË³Ğò°ÕÁË
 
-void InOrderTraverse(Bitree T)//æ ˆå®ç°ä¸­åºéå†
+void InOrderTraverse(Bitree T)//Õ»ÊµÏÖÖĞĞò±éÀú
 {
 	Bitree p;
 	p = T;
@@ -248,7 +261,7 @@ void InOrderTraverse(Bitree T)//æ ˆå®ç°ä¸­åºéå†
 	return;
 }
 
-void LevelOrder(Bitree T)//é˜Ÿåˆ—éå†äºŒå‰æ ‘
+void LevelOrder(Bitree T)//¶ÓÁĞ±éÀú¶ş²æÊ÷
 {
 	Bitree p;
 	p = T;
@@ -268,7 +281,7 @@ void LevelOrder(Bitree T)//é˜Ÿåˆ—éå†äºŒå‰æ ‘
 			EnBTQueue(qu, p->Rchild);
 		}
 	}
-}//åŸç†ï¼šæ ¹ç»“ç‚¹å…¥é˜Ÿï¼Œå‡ºé˜Ÿï¼Œè®¿é—®ï¼Œç„¶åå…¥é˜Ÿå…¶å­©å­ï¼Œé‡å¤
+}//Ô­Àí£º¸ù½áµãÈë¶Ó£¬³ö¶Ó£¬·ÃÎÊ£¬È»ºóÈë¶ÓÆäº¢×Ó£¬ÖØ¸´
 
 void BTQueueInit(BTQueue& Q)
 {
@@ -311,7 +324,7 @@ void DeBTQueue(BTQueue& Q, Bitree T)
 //	return;
 //}
 
-void CreateBiTree(Bitree& T)//å…ˆåºéå†ABC##DE#G##F###æ„é€ äºŒå‰æ ‘ #è¡¨ç¤ºç©ºç»“ç‚¹
+void CreateBiTree(Bitree& T)//ÏÈĞò±éÀúABC##DE#G##F###¹¹Ôì¶ş²æÊ÷ #±íÊ¾¿Õ½áµã
 {
 	char ch;
 	cin >> ch;
@@ -326,13 +339,13 @@ void CreateBiTree(Bitree& T)//å…ˆåºéå†ABC##DE#G##F###æ„é€ äºŒå‰æ ‘ #è¡¨ç¤º
 			exit(OVERFLOW);
 		}
 		/*T->data.data = ch;*/
-		CreateBiTree(T->Ichild);//é€’å½’
+		CreateBiTree(T->Ichild);//µİ¹é
 		CreateBiTree(T->Rchild);
 	}
 	return;
 }
 
-void CopyBitree(Bitree T, Bitree& NewT)//æ„ä¹‰ï¼šå¤åˆ¶æ ¹èŠ‚ç‚¹
+void CopyBitree(Bitree T, Bitree& NewT)//ÒâÒå£º¸´ÖÆ¸ù½Úµã
 {
 	if (T == NULL)
 	{
@@ -345,7 +358,7 @@ void CopyBitree(Bitree T, Bitree& NewT)//æ„ä¹‰ï¼šå¤åˆ¶æ ¹èŠ‚ç‚¹
 		exit(OVERFLOW);
 	}
 	NewT->data = T->data;
-	CopyBitree(T->Ichild, NewT->Ichild);//é€’å½’
+	CopyBitree(T->Ichild, NewT->Ichild);//µİ¹é
 	CopyBitree(T->Rchild, NewT->Rchild);
 	return;
 }
@@ -403,7 +416,7 @@ void CreateHuffmanTree(HuffmanTree& HT, int n)
 	for (int i = 1; i <= n; i++)
 	{
 		cin >> HT[i].weight;
-	}//ä»¥ä¸Šä¸ºå“ˆå¤«æ›¼æ ‘åˆå§‹åŒ–
+	}//ÒÔÉÏÎª¹ş·òÂüÊ÷³õÊ¼»¯
 	int min1;
 	int min2;
 	for (int i = n + 1; i <= m; i++)
@@ -499,15 +512,15 @@ void CreateHuffmanCode(HuffmanTree HT, char** HC, int n)
 		HC[i] = new char[n - start - 1];
 		strcpy(HC[i], &cd[start+1]);
 	}
-	free(cd);
+	delete cd;
 	return;
 }
 
-void CreateUDN(AMGraph& G)//æ„é€ æ— å‘ç½‘
+void CreateUDN(AMGraph& G)//¹¹ÔìÎŞÏòÍø
 {
-	cout << "è¾“å…¥é¡¶ç‚¹æ•°ä¸è¾¹æ•°" << endl;
+	cout << "ÊäÈë¶¥µãÊıÓë±ßÊı" << endl;
 	cin >> G.vexnum >> G.arcnum;
-	cout << "è¾“å…¥é¡¶ç‚¹ä¿¡æ¯" << endl;
+	cout << "ÊäÈë¶¥µãĞÅÏ¢" << endl;
 	for (int i = 0; i < G.vexnum; i++)
 	{
 		cin >> G.vexs[i];
@@ -524,7 +537,7 @@ void CreateUDN(AMGraph& G)//æ„é€ æ— å‘ç½‘
 	ArcType weight;
 	for (int i = 0; i < G.arcnum; i++)
 	{
-		cout << "ä¾æ¬¡è¾“å…¥ä¸¤ä¸ªé¡¶ç‚¹åŠè¾¹çš„æƒå€¼" << endl;
+		cout << "ÒÀ´ÎÊäÈëÁ½¸ö¶¥µã¼°±ßµÄÈ¨Öµ" << endl;
 		cin >> v1 >> v2 >> weight;
 		int n = LocateVex(G, v1);
 		int m = LocateVex(G, v2);
@@ -550,15 +563,15 @@ int LocateVex(AMGraph& G,VerTexType v)
 	return -1;
 }
 
-void CreateUDG(ALGraph& G)//å»ºç«‹æ— å‘é‚»æ¥è¡¨
+void CreateUDG(ALGraph& G)//½¨Á¢ÎŞÏòÁÚ½Ó±í
 {
-	cout << "è¾“å…¥æ€»ç»“ç‚¹æ•°å’Œæ€»è¾¹æ•°" << endl;
+	cout << "ÊäÈë×Ü½áµãÊıºÍ×Ü±ßÊı" << endl;
 	cin >> G.vexnum >> G.arcnum;
 	if (G.vexnum > MVNum)
 	{
 		exit(OVERFLOW);
 	}
-	cout << "è¾“å…¥ç»“ç‚¹ä¿¡æ¯" << endl;
+	cout << "ÊäÈë½áµãĞÅÏ¢" << endl;
 	for (int i = 0; i < G.vexnum; i++)
 	{
 		cin >> G.vertics[i].data;
@@ -594,4 +607,71 @@ int LocateVexAL(ALGraph& G, VerTexType v)
 		}
 	}
 	return -1;
+}
+
+void DFS(AMGraph& G, int v, bool* visited)//Éî¶ÈÓÅÏÈ±éÀúÁÚ½Ó¾ØÕó
+{
+	cout << v;
+	visited[v] = true;
+	for (int i = 0; i < G.vexnum; i++)
+	{
+		if (G.arcs[v][i] != 0 && (visited[i] == 0))
+		{
+			DFS(G, i, visited);
+		}
+	}
+	return;
+}
+
+void BFS(ALGraph& G, int v, bool* visited, SqQueue& Q)//¹ã¶È±éÀúÁÚ½Ó±í
+{
+	cout << v;
+	visited[v] = true;
+	ArcNode* temp = G.vertics[v].firstarc;
+	while (temp)
+	{
+		EnSqQueue(Q, temp->adjvex);
+		temp = temp->nextarc;
+	}
+	int a;
+	while (Q.front != Q.rear)
+	{
+		DeSqQueue(Q, a);
+		if (visited[a] == false)
+		{
+			BFS(G, a, visited, Q);
+		}
+	}
+	return;
+}
+
+void SqQueueInit(SqQueue& Q)
+{
+	Q.base = new int[MAXSIZE];
+	if (!Q.base)
+	{
+		exit(OVERFLOW);
+	}
+	Q.front = 0;
+	Q.rear = 0;
+}
+
+void EnSqQueue(SqQueue& Q, int v)
+{
+	if ((Q.rear - Q.front+MAXSIZE) % MAXSIZE == MAXSIZE - 1)
+	{
+		exit(OVERFLOW);
+	}
+	Q.base[Q.rear] = v;
+	Q.rear = (Q.rear + 1) % MAXSIZE;
+}
+
+void DeSqQueue(SqQueue& Q, int& v)
+{
+	if (Q.rear == Q.front)
+	{
+		exit(OVERFLOW);
+	}
+	v = Q.base[Q.front];
+	Q.front = (Q.front + 1) % MAXSIZE;
 }
